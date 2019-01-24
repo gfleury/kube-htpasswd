@@ -45,8 +45,8 @@ func main() {
 	var noHash = flag.Bool("p", false, "Do not encrypt the password (plaintext, insecure).")
 	var deleteUser = flag.Bool("D", false, "Delete the specified user.")
 	var verifyUser = flag.Bool("v", false, "Verify password for the specified user.")
-	var context = flag.String("-C", "", "Specify Kubernetes config context to use (same from kubectl config).")
-	var kubeNamespace = flag.String("-N", "default", "Specify Kubernetes namespace.")
+	var context = flag.String("C", "", "Specify Kubernetes config context to use (same from kubectl config).")
+	var kubeNamespace = flag.String("N", "default", "Specify Kubernetes namespace.")
 
 	flag.Parse()
 
