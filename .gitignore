@@ -1,3 +1,4 @@
 kube-htpasswd
 .vscode/
 coverage.txt
+dist/
