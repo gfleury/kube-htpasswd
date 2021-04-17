@@ -90,10 +90,15 @@ var rootCmd = &cobra.Command{
 					Name: secretName,
 				},
 			}
-			secret, err = clientset.CoreV1().Secrets(*kubeConfigFlags.Namespace).Create(context.TODO(), newSecret, metav1.CreateOptions{})
-			if err != nil {
-				return fmt.Errorf("failed to create secret %s on namespace %s: %s", secretName, *kubeConfigFlags.Namespace, err.Error())
+			if !dryRun {
+				secret, err = clientset.CoreV1().Secrets(*kubeConfigFlags.Namespace).Create(context.TODO(), newSecret, metav1.CreateOptions{})
+				if err != nil {
+					return fmt.Errorf("failed to create secret %s on namespace %s: %s", secretName, *kubeConfigFlags.Namespace, err.Error())
+				}
+			} else {
+				secret = newSecret
 			}
+
 		} else {
 			secret, err = clientset.CoreV1().Secrets(*kubeConfigFlags.Namespace).Get(context.TODO(), secretName, metav1.GetOptions{})
 			if err != nil {
@@ -186,9 +191,21 @@ func init() {
 	rootCmd.Flag("namespace").Shorthand = "N"
 	rootCmd.Flag("server").Shorthand = ""
 
-	rootCmd.PersistentFlags().MarkHidden("as")
-	rootCmd.PersistentFlags().MarkHidden("as-group")
-	rootCmd.PersistentFlags().MarkHidden("cache-dir")
+	err := rootCmd.PersistentFlags().MarkHidden("as")
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	err = rootCmd.PersistentFlags().MarkHidden("as-group")
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	err = rootCmd.PersistentFlags().MarkHidden("cache-dir")
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
 
 	matchVersionKubeConfigFlags := cmdutil.NewMatchVersionFlags(kubeConfigFlags)
 	kubeFactory = cmdutil.NewFactory(matchVersionKubeConfigFlags)
@@ -209,8 +226,16 @@ func init() {
 	rootCmd.Flags().BoolVarP(&deleteUser, "delete", "D", false, "Delete the specified user.")
 	rootCmd.Flags().BoolVarP(&verifyUser, "verify", "v", false, "Verify password for the specified user.")
 
-	rootCmd.Flags().MarkDeprecated("crypt", "isn't supported")
-	rootCmd.Flags().MarkDeprecated("plaintext", "isn't supported")
+	err = rootCmd.Flags().MarkDeprecated("crypt", "isn't supported")
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	err = rootCmd.Flags().MarkDeprecated("plaintext", "isn't supported")
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
 }
 
 func main() {
