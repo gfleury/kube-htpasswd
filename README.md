@@ -12,9 +12,11 @@ Usage:
   kube-htpasswd -b[cmBdpsDv] secretName username password
   kube-htpasswd -n[imBdps] secretName username
   kube-htpasswd -nb[mBdps] secretName username password
+  kube-htpasswd -l secretName
 
 Flags:
   -b, --argued-password                Use the password from the command line rather than prompting for it.
+      --as-uid string                  UID to impersonate for the operation.
   -B, --bcrypt                         Force bcrypt encryption of the password (very secure).
       --certificate-authority string   Path to a cert file for the certificate authority
       --client-certificate string      Path to a client certificate file for TLS
@@ -23,10 +25,12 @@ Flags:
   -C, --context string                 The name of the kubeconfig context to use
   -c, --create-secret                  Create a new secret.
   -D, --delete                         Delete the specified user.
+      --disable-compression            If true, opt-out of response compression for all requests to the server
   -n, --dry-run                        Don't update secret; display results on stdout.
   -h, --help                           help for kube-htpasswd
       --insecure-skip-tls-verify       If true, the server's certificate will not be checked for validity. This will make your HTTPS connections insecure
       --kubeconfig string              Path to the kubeconfig file to use for CLI requests.
+  -l, --list                           List users in the secret.
   -m, --md5                            Force MD5 encryption of the password.
   -N, --namespace string               If present, the namespace scope for this CLI request
       --request-timeout string         The length of time to wait before giving up on a single server request. Non-zero values should contain a corresponding time unit (e.g. 1s, 2m, 3h). A value of zero means don't timeout requests. (default "0")
