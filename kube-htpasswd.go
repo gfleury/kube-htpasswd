@@ -36,18 +36,22 @@ var (
 	noHash          bool
 	deleteUser      bool
 	verifyUser      bool
+	listUsers       bool
 )
 
 var rootCmd = &cobra.Command{
 	Use: `kube-htpasswd [-cimBdpsDv] secretName username
   kube-htpasswd -b[cmBdpsDv] secretName username password
   kube-htpasswd -n[imBdps] secretName username
-  kube-htpasswd -nb[mBdps] secretName username password`,
+  kube-htpasswd -nb[mBdps] secretName username password
+  kube-htpasswd -l secretName`,
 	DisableFlagsInUseLine: true,
 	Args: func(cmd *cobra.Command, args []string) error {
 		n := 2
 		if arguedPassword {
 			n = 3
+		} else if listUsers {
+			n = 1
 		}
 		if len(args) != n {
 			return fmt.Errorf("accepts %d arg(s), received %d", n, len(args))
@@ -58,7 +62,6 @@ var rootCmd = &cobra.Command{
 		cmd.SilenceUsage = true
 
 		var secretName = args[0]
-		var username = args[1]
 		var password string
 		if len(args) == 3 {
 			password = args[2]
@@ -115,6 +118,15 @@ var rootCmd = &cobra.Command{
 		} else {
 			return fmt.Errorf("failed to get auth field from secret %s on namespace %s (check data.auth in the Secret)", secretName, *kubeConfigFlags.Namespace)
 		}
+
+		if listUsers {
+			for user := range passwords {
+				fmt.Println(user)
+			}
+			return nil
+		}
+
+		var username = args[1]
 
 		if deleteUser {
 			delete(passwords, username)
@@ -225,6 +237,7 @@ func init() {
 	rootCmd.Flags().BoolVarP(&noHash, "plaintext", "p", false, "Do not encrypt the password (plaintext, insecure).")
 	rootCmd.Flags().BoolVarP(&deleteUser, "delete", "D", false, "Delete the specified user.")
 	rootCmd.Flags().BoolVarP(&verifyUser, "verify", "v", false, "Verify password for the specified user.")
+	rootCmd.Flags().BoolVarP(&listUsers, "list", "l", false, "List users in the secret.")
 
 	err = rootCmd.Flags().MarkDeprecated("crypt", "isn't supported")
 	if err != nil {
